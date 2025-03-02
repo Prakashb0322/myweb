@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f8ff;
+            font-family: 'Roboto', sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            background: linear-gradient(135deg, #6dd5ed, #2193b0);
+            color: white;
+        }
+        h1 {
+            color: #fff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .btn-primary {
+            background-color: #ff6f61;
+            border-color: #ff6f61;
+        }
+        .btn-primary:hover {
+            background-color: #ff4c3b;
+            border-color: #ff4c3b;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        .currency-label {
+            font-weight: bold;
+            color: #fff;
+        }
+        .new-conversion {
+            margin-top: 20px;
+        }
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+        }
+        .form-control:focus {
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
+        }
+        label {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">Currency Converter</h1>
+    <form id="currencyForm" action="/api/convert" method="post">
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" class="form-control" id="amount" name="amount" placeholder="Enter amount" required>
+        </div>
+        <div class="form-group">
+            <label for="fromCurrency">From Currency</label>
+            <select class="form-control" id="fromCurrency" name="fromCurrency" required>
+                <option value="" disabled selected>Select currency</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="toCurrency">To Currency</label>
+            <select class="form-control" id="toCurrency" name="toCurrency" required>
+                <option value="" disabled selected>Select currency</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Convert</button>
+    </form>
+    <div class="result" style="display: none;">
+        <h2>Conversion Result:</h2>
+        <p class="currency-label">Converted Amount: <span id="convertedAmount"></span></p>
+        <p class="currency-label">From: <span id="fromCurrencyResult"></span> <span id="amountEntered"></span></p>
+        <p class="currency-label">To: <span id="toCurrencyResult"></span> <span id="convertedAmountResult"></span></p>
+        <button class="btn btn-secondary new-conversion" onclick="resetForm()">New Conversion</button>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    const currencies = ["USD", "EUR", "INR", "GBP", "AUD", "CAD", "JPY", "CNY", "NZD", "CHF", "SGD", "HKD", "RUB", "ZAR", "MXN"];
+
+    $(document).ready(function() {
+        currencies.forEach(currency => {
+            $('#fromCurrency, #toCurrency').append(`<option value="${currency}">${currency}</option>`);
+        });
+
+        $('#currencyForm').on('submit', function(event) {
+            event.preventDefault();
+
+            const amount = $('#amount').val();
+            const fromCurrency = $('#fromCurrency').val();
+            const toCurrency = $('#toCurrency').val();
+
+            $.post('/api/convert', { amount: amount, fromCurrency: fromCurrency, toCurrency: toCurrency })
+                .done(function(data) {
+                    $('.result').show();
+                    $('#convertedAmount').text(data.convertedAmount.toFixed(2));
+                    $('#fromCurrencyResult').text(fromCurrency);
+                    $('#amountEntered').text(amount);
+                    $('#toCurrencyResult').text(toCurrency);
+                    $('#convertedAmountResult').text(data.convertedAmount.toFixed(2));
+                })
+                .fail(function() {
+                    alert('Error converting currency. Please try again.');
+                });
+        });
+    });
+
+    function resetForm() {
+        $('#currencyForm')[0].reset();
+        $('.result').hide();
+    }
+</script>
+</body>
+</html>
