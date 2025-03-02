@@ -4,8 +4,14 @@ FROM openjdk:17-jdk-slim
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the built JAR file into the container
-COPY target/MyWeb-0.0.1-SNAPSHOT.jar app.jar
+# Copy the Maven wrapper and project files into the container
+COPY . .
+
+# Build the JAR file
+RUN ./mvnw clean package -DskipTests
+
+# Rename and move the JAR file
+RUN mv target/*.jar app.jar
 
 # Expose port 8080 (or change based on your application)
 EXPOSE 8080
