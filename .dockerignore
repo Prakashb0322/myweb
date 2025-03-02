@@ -1,0 +1,14 @@
+# Ignore the target folder (compiled code)
+target/
+
+# Ignore all JAR files
+*.jar
+
+# Ignore log files
+*.log
+
+# Ignore Node.js dependencies (if applicable)
+node_modules/
+
+# Ignore MacOS system files
+.DS_Store
